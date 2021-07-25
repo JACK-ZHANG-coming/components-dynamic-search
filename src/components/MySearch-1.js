@@ -25,9 +25,7 @@ export default class MySearch extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      startValue: null,
-      endValue: null,
-      endOpen: false,
+      flag: '0',
       typeForm: null,
       typeList: [null, null, null, null, null], // 动态表单类型
     }
@@ -48,7 +46,6 @@ export default class MySearch extends PureComponent {
     let tempArr = [];
     let typeListTempArr = [];
     tempArr = this.formRef.current.getFieldsValue()?.mySearchForm;
-    typeListTempArr = this.state.typeList;
     // console.log("this.state.typeList:", this.state.typeList);
     for (let i = 0; i < tempArr.length; i++) {
       // console.log('tempArr[i][`mySearchForm${i}-0`]:', tempArr[i][`mySearchForm${i}-0`])
@@ -60,9 +57,11 @@ export default class MySearch extends PureComponent {
     })
   }
 
-  areMyType = (value) => {
-    console.log("areMyType");
-    switch (this.state.typeList[value]) {
+  areMyType = (value, index) => {
+    let temp = {}
+    // temp[`mySearchForm`]
+    console.log("areMyType:", value);
+    switch (value) {
       case 'marketTime': return (<DatePicker style={{ width: '100%' }} showTime />);
       case 'marketType': return (
         <Select style={{ width: '100%' }} allowClear>
@@ -83,7 +82,7 @@ export default class MySearch extends PureComponent {
           <Option value="5">5</Option>
         </Select>
       );
-      default: break;
+      default: return null;
     }
   }
 
@@ -121,7 +120,7 @@ export default class MySearch extends PureComponent {
                                 fieldKey={[field.fieldKey, `mySearchForm${index}-0`]}
                                 rules={[{ required: true, message: '请输入内容' }]}
                               >
-                                <Select onChange={this.handleChange} allowClear>
+                                <Select onChange={() => { this.handleChange(index) }} allowClear>
                                   <Option value="marketTime">投放时间</Option>
                                   <Option value="marketType">投放类型</Option>
                                   <Option value="messageType">消息类型</Option>
@@ -137,9 +136,7 @@ export default class MySearch extends PureComponent {
                                 fieldKey={[field.fieldKey, `mySearchForm${index}-1`]}
                                 rules={[{ required: true, message: '请输入内容' }]}
                               >
-                                {
-                                  this.areMyType(index)
-                                }
+                                {this.areMyType(this.state.typeList[index], index)}
                               </Form.Item>
                             </div>
                           </div>
@@ -170,7 +167,7 @@ export default class MySearch extends PureComponent {
                                 fieldKey={[field.fieldKey, `mySearchForm${index}-1`]}
                                 rules={[{ required: true, message: '请输入内容' }]}
                               >
-                                {this.areMyType(index)}
+                                {this.areMyType(this.state.typeList[index], index)}
                               </Form.Item>
                             </div>
                             {
