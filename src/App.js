@@ -53,14 +53,6 @@ export default class App extends PureComponent {
             </Col>
           </Row>
           <Row>
-            {/* <Modal
-              width='80%'
-              title="查询条件"
-              closable={false}
-              footer={null}
-              visible={this.state.visible}
-              // visible={true} // 调试用，使modal一直打开
-            > */}
             {
               this.state.visible
                 ?
@@ -68,7 +60,7 @@ export default class App extends PureComponent {
                 :
                 null
             }
-            {/* </Modal> */}
+            {/* <MySearch onClose={this.onClose}></MySearch> */}
           </Row>
         </Card>
 
