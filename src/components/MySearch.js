@@ -6,7 +6,7 @@ import {
   Card,
   Space,
   Form,
-  TimePicker,
+  DatePicker,
   Select,
   Input,
 } from 'antd';
@@ -28,8 +28,8 @@ export default class MySearch extends PureComponent {
       startValue: null,
       endValue: null,
       endOpen: false,
-      statisticalDurationState: 0,
-      pointList: [], // 点位
+      typeForm: null,
+      typeList: [null, null, null, null, null], // 动态表单类型
     }
   }
 
@@ -45,10 +45,52 @@ export default class MySearch extends PureComponent {
   handleChange = (value) => {
     console.log("handleChange-value:", value);
     console.log("this.formRef.current.getFieldsValue():", this.formRef.current.getFieldsValue())
+    let tempArr = [];
+    let typeListTempArr = [];
+    tempArr = this.formRef.current.getFieldsValue()?.mySearchForm;
+    typeListTempArr = this.state.typeList;
+    // console.log("this.state.typeList:", this.state.typeList);
+    for (let i = 0; i < tempArr.length; i++) {
+      // console.log('tempArr[i][`mySearchForm${i}-0`]:', tempArr[i][`mySearchForm${i}-0`])
+      typeListTempArr[i] = tempArr[i][`mySearchForm${i}-0`];
+    }
+    console.log('typeListTempArr:', typeListTempArr)
+    this.setState({
+      typeList: typeListTempArr
+    })
   }
 
+  areMyType = (value) => {
+    console.log("areMyType");
+    switch (this.state.typeList[value]) {
+      case 'marketTime': return (<DatePicker style={{ width: '100%' }} showTime />);
+      case 'marketType': return (
+        <Select style={{ width: '100%' }} allowClear>
+          <Option value="0">0</Option>
+          <Option value="1">1</Option>
+        </Select>
+      );
+      case 'messageType': return (
+        <Select style={{ width: '100%' }} allowClear>
+          <Option value="2">2</Option>
+          <Option value="3">3</Option>
+        </Select>
+      );
+      case 'messageContent': return <Input style={{ width: '100%' }}></Input>;
+      case 'principal': return (
+        <Select style={{ width: '100%' }} allowClear>
+          <Option value="4">4</Option>
+          <Option value="5">5</Option>
+        </Select>
+      );
+      default: break;
+    }
+  }
+
+
   render() {
-    console.log("子组件props:", this.props);
+    // console.log("子组件props:", this.props);
+
 
     return (
       <>
@@ -76,7 +118,7 @@ export default class MySearch extends PureComponent {
                               <Form.Item
                                 wrapperCol={{ span: 22 }}
                                 name={[field.name, `mySearchForm${index}-0`]}
-                                fieldKey={[field.fieldKey, `mySearchForm${index}`]}
+                                fieldKey={[field.fieldKey, `mySearchForm${index}-0`]}
                                 rules={[{ required: true, message: '请输入内容' }]}
                               >
                                 <Select onChange={this.handleChange} allowClear>
@@ -89,16 +131,15 @@ export default class MySearch extends PureComponent {
                               </Form.Item>
                             </div>
                             <div style={{ width: '30%' }}>
-                              {
-                                console.log('---:')
-                              }
                               <Form.Item
                                 wrapperCol={{ span: 22 }}
                                 name={[field.name, `mySearchForm${index}-1`]}
-                                fieldKey={[field.fieldKey, `mySearchForm${index}`]}
+                                fieldKey={[field.fieldKey, `mySearchForm${index}-1`]}
                                 rules={[{ required: true, message: '请输入内容' }]}
                               >
-                                <Input></Input>
+                                {
+                                  this.areMyType(index)
+                                }
                               </Form.Item>
                             </div>
                           </div>
@@ -109,8 +150,8 @@ export default class MySearch extends PureComponent {
                             <div style={{ width: '30%' }}>
                               <Form.Item
                                 wrapperCol={{ span: 22 }}
-                                name={[field.name, `mySearchForm${index}`]}
-                                fieldKey={[field.fieldKey, `mySearchForm${index}`]}
+                                name={[field.name, `mySearchForm${index}-0`]}
+                                fieldKey={[field.fieldKey, `mySearchForm${index}-0`]}
                                 rules={[{ required: true, message: '请输入内容' }]}
                               >
                                 <Select onChange={this.handleChange} allowClear>
@@ -126,10 +167,10 @@ export default class MySearch extends PureComponent {
                               <Form.Item
                                 wrapperCol={{ span: 22 }}
                                 name={[field.name, `mySearchForm${index}-1`]}
-                                fieldKey={[field.fieldKey, `mySearchForm${index}`]}
+                                fieldKey={[field.fieldKey, `mySearchForm${index}-1`]}
                                 rules={[{ required: true, message: '请输入内容' }]}
                               >
-                                <Input></Input>
+                                {this.areMyType(index)}
                               </Form.Item>
                             </div>
                             {
