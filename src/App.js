@@ -58,8 +58,8 @@ export default class App extends PureComponent {
               title="查询条件"
               closable={false}
               footer={null}
-              visible={this.state.visible}
-              // visible={true} // 调试用，使modal一直打开
+              // visible={this.state.visible}
+              visible={true} // 调试用，使modal一直打开
             >
               <MySearch onClose={this.onClose}></MySearch>
             </Modal>
