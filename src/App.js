@@ -90,22 +90,24 @@ export default class App extends React.Component {
     let obj = {}
     for (let i = 0; i < temp.length; i++) {
       if (Object.keys(temp[i])[1] === 'launchTime') {
-        obj[`${Object.keys(temp[i])[1]}`] = moment(temp[i][`${Object.keys(temp[i])[1]}`]).format('YYYYMMDDHHmmss')
+        obj[`${Object.keys(temp[i])[1]}`] = moment(temp[i][`${Object.keys(temp[i])[1]}`][0]).format('YYYYMMDDHHmmss') + ',' + moment(temp[i][`${Object.keys(temp[i])[1]}`][1]).format('YYYYMMDDHHmmss')
       }
       else {
         obj[`${Object.keys(temp[i])[1]}`] = temp[i][`${Object.keys(temp[i])[1]}`];
       }
     }
-    console.log("onFinish-value:", obj);
+    console.log("onFinish-value:", value, obj);
   }
 
   render() {
     return (
       <div>
         <Modal
+          title="查询条件"
           centered
           visible
           width={800}
+          closable={false}
           footer={[
             <Button onClick={() => { }}>取消</Button>,
             <Button onClick={() => {
@@ -136,7 +138,7 @@ export default class App extends React.Component {
 
                     <div style={{ display: 'flex', width: '100%', marginBottom: '10px' }} key={key}>
 
-                      <div style={{ width: '30%' }}>
+                      <div style={{ width: '40%' }}>
                         <Form.Item
                           // name='selectType'
                           name={[name, `selectType`]}
@@ -158,7 +160,7 @@ export default class App extends React.Component {
                           </Select>
                         </Form.Item>
                       </div>
-                      <div style={{ width: '30%' }}>
+                      <div style={{ width: '40%' }}>
                         <Form.Item
                           shouldUpdate={(prevValue, currValue) =>
                             // prevValue.selectType[fieldKey] !== currValue.selectType[fieldKey]
@@ -169,19 +171,25 @@ export default class App extends React.Component {
                             ({ getFieldValue }) => {
                               console.log(getFieldValue(['type', fieldKey, `selectType`]))
                               switch (getFieldValue(['type', fieldKey, `selectType`])) {
-                                case '投放时间': return (
-                                  <Form.Item
-                                    // name='launchTime'
-                                    name={[name, 'launchTime']}
-                                    fieldKey={[fieldKey, 'launchTime']}
-                                    rules={[{ required: true, message: '字段不能为空' }]}
-                                  >
-                                    <DatePicker
-                                      showTime
-                                      onChange={this.onlaunchTimeChange}
-                                    />
-                                  </Form.Item>
-                                )
+                                case '投放时间':
+                                  return (
+                                    <Form.Item
+                                      // name='launchTime'
+                                      name={[name, 'launchTime']}
+                                      fieldKey={[fieldKey, 'launchTime']}
+                                      rules={[{ required: true, message: '字段不能为空' }]}
+                                      initialValue={[
+                                        moment(moment((moment(moment().format('YYYY-MM-DD HH:mm:ss')).unix() - 172800) * 1000).format(), 'YYYY-MM-DD HH:mm:ss'),
+                                        moment(moment((moment(moment().format('YYYY-MM-DD HH:mm:ss')).unix()) * 1000).format(), 'YYYY-MM-DD HH:mm:ss')
+                                      ]}
+                                    >
+                                      <DatePicker.RangePicker
+
+                                        showTime
+                                        onChange={this.onlaunchTimeChange}
+                                      />
+                                    </Form.Item>
+                                  )
                                 case '投放类型': return (
                                   <Form.Item
                                     // name='launchType'
@@ -252,7 +260,19 @@ export default class App extends React.Component {
                                     </Select>
                                   </Form.Item>
                                 )
-                                default: break;
+                                default: return (
+                                  <Form.Item
+                                    // name='leader'
+                                    name={[name, 'other']}
+                                    fieldKey={[fieldKey, 'other']}
+                                    rules={[{ required: true, message: '字段不能为空' }]}
+                                  >
+                                    <Input
+                                      placeholder='请输入'
+                                    >
+                                    </Input>
+                                  </Form.Item>
+                                );
                               }
                             }
 
@@ -260,22 +280,18 @@ export default class App extends React.Component {
                         </Form.Item>
                       </div>
                       {
-                        key > 0
-                          ?
-                          <div style={{ width: '10%' }}>
-                            <Form.Item>
-                              <a
-                                href
-                                style={{ marginLeft: '10px' }}
-                                onClick={() => {
-                                  remove(name)
-                                }}>
-                                <MinusCircleOutlined />
-                              </a>
-                            </Form.Item>
-                          </div>
-                          :
-                          null
+                        <div style={{ width: '10%' }}>
+                          <Form.Item>
+                            <a
+                              href
+                              style={{ marginLeft: '10px' }}
+                              onClick={() => {
+                                remove(name)
+                              }}>
+                              <MinusCircleOutlined />
+                            </a>
+                          </Form.Item>
+                        </div>
                       }
                     </div>
                   ))}
