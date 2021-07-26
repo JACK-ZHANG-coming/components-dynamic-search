@@ -57,36 +57,6 @@ export default class App extends React.Component {
     ],
   }
 
-  // onselectTypeChange = (value, index) => {
-  //   console.log("value-index---", value, index);
-  //   this.formRef.current.setFieldsValue({
-  //     selectType: value
-  //   })
-  // }
-  // onlaunchTimeChange = (date, dateString) => {
-  //   console.log(date)
-  //   console.log(dateString)
-  //   this.formRef.current.setFieldsValue({
-  //     lanuchTime: dateString
-  //   })
-  // }
-  // onlaunchTypeChange = (value) => {
-  //   this.formRef.current.setFieldsValue({
-  //     lanuchType: value
-  //   })
-  // }
-  // onmessageChange = (e) => {
-  //   console.log(e.currentTarget.value)
-  //   this.formRef.current.setFieldsValue({
-  //     message: e.currentTarget.value
-  //   })
-  // }
-  // onleaderChange = (value) => {
-  //   this.formRef.current.setFieldsValue({
-  //     leader: value
-  //   })
-  // }
-
   onFinish = (value) => {
     let temp = [];
     temp = value?.type;
@@ -143,8 +113,6 @@ export default class App extends React.Component {
             name="basic"
             ref={this.formRef}
             layout='inline'
-            // initialValues={{ type: this.state.myFormValue }}
-            onFieldsChange={(v, m) => { console.log(v, m) }}
             onFinish={this.onFinish}
           >
             <Form.List
@@ -152,20 +120,17 @@ export default class App extends React.Component {
             >
               {(fields, { add, remove }) => (
                 <>
-                  {fields.map(({ key, name, fieldKey }) => (
+                  {fields.map(({ key, name, fieldKey }, index) => (
 
                     <div style={{ display: 'flex', width: '100%', marginBottom: '10px' }} key={key}>
                       <div style={{ width: '40%' }}>
                         <Form.Item
-                          // name='selectType'
                           name={[name, `selectType`]}
-                          shouldUpdate={true}
-                          // fieldKey={[fieldKey, `selectType`]}
                           rules={[{ required: true, message: '字段不能为空' }]}
+                          shouldUpdate={true}
                         >
                           <Select
                             placeholder='请选择搜索类型'
-                          // onChange={this.onselectTypeChange}
                           >
                             {
                               this.state.typeOption.map((item) =>
@@ -189,13 +154,11 @@ export default class App extends React.Component {
                         >
                           {
                             ({ getFieldValue }) => {
-                              console.log(getFieldValue(['type', fieldKey, `selectType`]))
-                              switch (getFieldValue(['type', fieldKey, `selectType`])) {
+                              switch (getFieldValue(['type', index, `selectType`])) {
                                 case '投放时间':
                                   return (
                                     <Form.Item
                                       name={[name, 'launchTime']}
-                                      fieldKey={[fieldKey, 'launchTime']}
                                       rules={[{ required: true, message: '字段不能为空' }]}
                                       initialValue={[
                                         moment(moment((moment(moment().format('YYYY-MM-DD HH:mm:ss')).unix() - 172800) * 1000).format(), 'YYYY-MM-DD HH:mm:ss'),
@@ -204,19 +167,16 @@ export default class App extends React.Component {
                                     >
                                       <DatePicker.RangePicker
                                         showTime
-                                      // onChange={this.onlaunchTimeChange}
                                       />
                                     </Form.Item>
                                   )
                                 case '投放类型': return (
                                   <Form.Item
                                     name={[name, 'launchType']}
-                                    fieldKey={[fieldKey, 'launchType']}
                                     rules={[{ required: true, message: '字段不能为空' }]}
                                   >
                                     <Select
                                       placeholder='请选择投放类型'
-                                    // onChange={this.onlaunchTypeChange}
                                     >
                                       {
                                         this.state.lanuchTypeOption.map((item, index) =>
@@ -229,12 +189,10 @@ export default class App extends React.Component {
                                 case '消息类型': return (
                                   <Form.Item
                                     name={[name, 'messageType']}
-                                    fieldKey={[fieldKey, 'messageType']}
                                     rules={[{ required: true, message: '字段不能为空' }]}
                                   >
                                     <Select
                                       placeholder='请选择消息类型'
-                                    // onChange={this.onmessageTypeChange}
                                     >
                                       {
                                         this.state.messageTypeOption.map((item, index) =>
@@ -247,24 +205,20 @@ export default class App extends React.Component {
                                 case '消息内容': return (
                                   <Form.Item
                                     name={[name, 'message']}
-                                    fieldKey={[fieldKey, 'message']}
                                     rules={[{ required: true, message: '字段不能为空' }]}
                                   >
                                     <Input
                                       placeholder='请输入要查询的消息内容'
-                                    // onChange={this.onmessageChange}
                                     />
                                   </Form.Item>
                                 )
                                 case '负责人': return (
                                   <Form.Item
                                     name={[name, 'leader']}
-                                    fieldKey={[fieldKey, 'leader']}
                                     rules={[{ required: true, message: '字段不能为空' }]}
                                   >
                                     <Select
                                       placeholder='请选择负责人'
-                                    // onChange={this.onleaderChange}
                                     >
                                       {
                                         this.state.onleaderOption.map((item, index) =>
@@ -309,28 +263,21 @@ export default class App extends React.Component {
                     </div>
                   ))}
                   {fields.length < 5 ? (
-                    <Form.Item shouldUpdate>
-                      <Button
-                        onClick={() => {
-                          add()
-                        }}
-                      >
-                        <PlusOutlined />
-                        添加条件
-                      </Button>
+                    <Form.Item
+                      shouldUpdate
+                    >
+                      {({ getFieldValue }) =>
+                        <Button disabled={!(fields[0] === -1 || fields.length === 0 || getFieldValue(['type', fields.length - 1, 'selectType']))} onClick={() => add()} icon={<PlusOutlined />}>添加条件</Button>
+                      }
                     </Form.Item>
-
                   ) : null}
                 </>
-
               )}
             </Form.List>
-
           </Form>
         </Modal >
       </div >
     );
   }
-
 }
 
