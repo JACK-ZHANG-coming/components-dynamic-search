@@ -1,11 +1,14 @@
 import {
-  Button, Form, Select, Modal, Input, DatePicker, Row, Col
+  Button, Form, Select, Modal, Input, DatePicker,
 } from 'antd';
 import React from 'react'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import 'antd/dist/antd.css'
+
 const { Option } = Select;
+
+let flagSubmit = 0;
 
 export default class App extends React.Component {
   formRef = React.createRef();
@@ -51,38 +54,38 @@ export default class App extends React.Component {
       {
         label: '李四', value: '80307225'
       },
-    ]
+    ],
   }
 
-  onselectTypeChange = (value, index) => {
-    console.log("value-index---", value, index);
-    this.formRef.current.setFieldsValue({
-      selectType: value
-    })
-  }
-  onlaunchTimeChange = (date, dateString) => {
-    console.log(date)
-    console.log(dateString)
-    this.formRef.current.setFieldsValue({
-      lanuchTime: dateString
-    })
-  }
-  onlaunchTypeChange = (value) => {
-    this.formRef.current.setFieldsValue({
-      lanuchType: value
-    })
-  }
-  onmessageChange = (e) => {
-    console.log(e.currentTarget.value)
-    this.formRef.current.setFieldsValue({
-      message: e.currentTarget.value
-    })
-  }
-  onleaderChange = (value) => {
-    this.formRef.current.setFieldsValue({
-      leader: value
-    })
-  }
+  // onselectTypeChange = (value, index) => {
+  //   console.log("value-index---", value, index);
+  //   this.formRef.current.setFieldsValue({
+  //     selectType: value
+  //   })
+  // }
+  // onlaunchTimeChange = (date, dateString) => {
+  //   console.log(date)
+  //   console.log(dateString)
+  //   this.formRef.current.setFieldsValue({
+  //     lanuchTime: dateString
+  //   })
+  // }
+  // onlaunchTypeChange = (value) => {
+  //   this.formRef.current.setFieldsValue({
+  //     lanuchType: value
+  //   })
+  // }
+  // onmessageChange = (e) => {
+  //   console.log(e.currentTarget.value)
+  //   this.formRef.current.setFieldsValue({
+  //     message: e.currentTarget.value
+  //   })
+  // }
+  // onleaderChange = (value) => {
+  //   this.formRef.current.setFieldsValue({
+  //     leader: value
+  //   })
+  // }
 
   onFinish = (value) => {
     let temp = [];
@@ -90,13 +93,27 @@ export default class App extends React.Component {
     let obj = {}
     for (let i = 0; i < temp.length; i++) {
       if (Object.keys(temp[i])[1] === 'launchTime') {
-        obj[`${Object.keys(temp[i])[1]}`] = moment(temp[i][`${Object.keys(temp[i])[1]}`][0]).format('YYYYMMDDHHmmss') + ',' + moment(temp[i][`${Object.keys(temp[i])[1]}`][1]).format('YYYYMMDDHHmmss')
+        obj[`${Object.keys(temp[i])[1]}`] = moment(temp[i][`${Object.keys(temp[i])[1]}`][0]).format('YYYYMMDDHHmmss') + ','
+          + moment(temp[i][`${Object.keys(temp[i])[1]}`][1]).format('YYYYMMDDHHmmss');
       }
       else {
         obj[`${Object.keys(temp[i])[1]}`] = temp[i][`${Object.keys(temp[i])[1]}`];
       }
     }
     console.log("onFinish-value:", value, obj);
+    this.props.areSetSearchValue(value.type);
+    // 按钮为“查询”，关闭页面，进行查询操作
+    if (flagSubmit === 1) {
+      this.props.onClose();
+    }
+  }
+
+  componentDidMount() {
+    console.log("子组件加载完毕");
+    console.log("this.props.searchValue:", this.props.searchValue)
+    this.formRef.current.setFieldsValue({
+      type: this.props.searchValue,
+    })
   }
 
   render() {
@@ -113,19 +130,20 @@ export default class App extends React.Component {
             <Button onClick={() => {
               this.formRef.current.setFieldsValue({
                 type: [-1]
-              })
+              });
+              this.props.areSetSearchValue([-1]);
             }}>
               重置
             </Button>,
-            <Button type='primary' onClick={() => { this.formRef.current.submit() }}>保存</Button>,
-            <Button type='primary' onClick={() => { this.formRef.current.submit() }}>查询</Button>
+            <Button type='primary' onClick={() => { flagSubmit = 0; this.formRef.current.submit() }}>保存</Button>,
+            <Button type='primary' onClick={() => { flagSubmit = 1; this.formRef.current.submit() }}>查询</Button>
           ]}
         >
           <Form
             name="basic"
             ref={this.formRef}
             layout='inline'
-            initialValues={{ type: [-1] }}
+            // initialValues={{ type: this.state.myFormValue }}
             onFieldsChange={(v, m) => { console.log(v, m) }}
             onFinish={this.onFinish}
           >
@@ -147,7 +165,7 @@ export default class App extends React.Component {
                         >
                           <Select
                             placeholder='请选择搜索类型'
-                            onChange={this.onselectTypeChange}
+                            // onChange={this.onselectTypeChange}
                           >
                             {
                               this.state.typeOption.map((item, index) => {
@@ -162,9 +180,12 @@ export default class App extends React.Component {
                       </div>
                       <div style={{ width: '40%' }}>
                         <Form.Item
-                          shouldUpdate={(prevValue, currValue) =>
+                          shouldUpdate={(prevValue, currValue) => {
                             // prevValue.selectType[fieldKey] !== currValue.selectType[fieldKey]
-                            console.log(this.formRef)
+                            // console.log(this.formRef)
+                            console.log(prevValue.selectType, currValue.selectType);
+                            return true;
+                          }
                           }
                         >
                           {
@@ -186,7 +207,7 @@ export default class App extends React.Component {
                                       <DatePicker.RangePicker
 
                                         showTime
-                                        onChange={this.onlaunchTimeChange}
+                                        // onChange={this.onlaunchTimeChange}
                                       />
                                     </Form.Item>
                                   )
@@ -199,7 +220,7 @@ export default class App extends React.Component {
                                   >
                                     <Select
                                       placeholder='请选择投放类型'
-                                      onChange={this.onlaunchTypeChange}
+                                      // onChange={this.onlaunchTypeChange}
                                     >
                                       {
                                         this.state.lanuchTypeOption.map((item, index) =>
@@ -218,7 +239,7 @@ export default class App extends React.Component {
                                   >
                                     <Select
                                       placeholder='请选择消息类型'
-                                      onChange={this.onmessageTypeChange}
+                                      // onChange={this.onmessageTypeChange}
                                     >
                                       {
                                         this.state.messageTypeOption.map((item, index) =>
@@ -237,7 +258,7 @@ export default class App extends React.Component {
                                   >
                                     <Input
                                       placeholder='请输入要查询的消息内容'
-                                      onChange={this.onmessageChange}
+                                      // onChange={this.onmessageChange}
                                     />
                                   </Form.Item>
                                 )
@@ -250,7 +271,7 @@ export default class App extends React.Component {
                                   >
                                     <Select
                                       placeholder='请选择负责人'
-                                      onChange={this.onleaderChange}
+                                      // onChange={this.onleaderChange}
                                     >
                                       {
                                         this.state.onleaderOption.map((item, index) =>

@@ -11,7 +11,10 @@ import 'antd/dist/antd.css'
 
 export default class App extends PureComponent {
 
-  state = { visible: false };
+  state = {
+    visible: false,
+    searchValue: [-1,]
+  };
 
   onCloseOrOpen = (flag) => {
     console.log(flag)
@@ -26,11 +29,18 @@ export default class App extends PureComponent {
       visible: false,
     });
   }
+
   onOpen = () => {
     console.log("open")
     this.setState({
       visible: true,
     });
+  }
+
+  areSetSearchValue = (value) => {
+    this.setState({
+      searchValue: value,
+    })
   }
 
 
@@ -56,7 +66,7 @@ export default class App extends PureComponent {
             {
               this.state.visible
                 ?
-                <MySearch onClose={this.onClose}></MySearch>
+                <MySearch onClose={this.onClose} areSetSearchValue={this.areSetSearchValue} searchValue={this.state.searchValue}></MySearch>
                 :
                 null
             }
