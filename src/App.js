@@ -6,6 +6,7 @@ import {
   Card,
   Modal,
 } from 'antd';
+import moment from 'moment';
 import MySearch from './components/MySearch.js'
 import 'antd/dist/antd.css'
 
@@ -13,7 +14,14 @@ export default class App extends PureComponent {
 
   state = {
     visible: false,
-    searchValue: [-1,]
+    searchValue: [
+      {
+        selectType: "投放时间", launchTime: [
+          moment(moment((moment(moment().format('YYYY-MM-DD HH:mm:ss')).unix() - 172800) * 1000).format(), 'YYYY-MM-DD HH:mm:ss'),
+          moment(moment((moment(moment().format('YYYY-MM-DD HH:mm:ss')).unix()) * 1000).format(), 'YYYY-MM-DD HH:mm:ss')
+        ]
+      }
+    ]
   };
 
   onCloseOrOpen = (flag) => {

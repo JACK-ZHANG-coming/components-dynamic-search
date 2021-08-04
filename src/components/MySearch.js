@@ -99,9 +99,24 @@ export default class App extends React.Component {
             <Button onClick={this.props.onClose}>取消</Button>,
             <Button onClick={() => {
               this.formRef.current.setFieldsValue({
-                type: [-1]
+                type: [
+                  {
+                    selectType: "投放时间", launchTime: [
+                      moment(moment((moment(moment().format('YYYY-MM-DD HH:mm:ss')).unix() - 172800) * 1000).format(), 'YYYY-MM-DD HH:mm:ss'),
+                      moment(moment((moment(moment().format('YYYY-MM-DD HH:mm:ss')).unix()) * 1000).format(), 'YYYY-MM-DD HH:mm:ss')
+                    ]
+                  }
+                ]
+                // [-1]
               });
-              this.props.areSetSearchValue([-1]);
+              this.props.areSetSearchValue([
+                {
+                  selectType: "投放时间", launchTime: [
+                    moment(moment((moment(moment().format('YYYY-MM-DD HH:mm:ss')).unix() - 172800) * 1000).format(), 'YYYY-MM-DD HH:mm:ss'),
+                    moment(moment((moment(moment().format('YYYY-MM-DD HH:mm:ss')).unix()) * 1000).format(), 'YYYY-MM-DD HH:mm:ss')
+                  ]
+                }
+              ]);
             }}>
               重置
             </Button>,
