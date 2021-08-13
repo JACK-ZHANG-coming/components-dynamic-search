@@ -58,24 +58,67 @@ export default class App extends React.Component {
   }
 
   onFinish = (value) => {
+    // console.log('value--:', value)
     let temp = [];
     temp = value?.type;
     let obj = {}
     for (let i = 0; i < temp.length; i++) {
-      if (Object.keys(temp[i])[1] === 'launchTime') {
-        obj[`${Object.keys(temp[i])[1]}`] = moment(temp[i][`${Object.keys(temp[i])[1]}`][0]).format('YYYYMMDDHHmmss') + ','
-          + moment(temp[i][`${Object.keys(temp[i])[1]}`][1]).format('YYYYMMDDHHmmss');
+      console.log('--', Object.values(temp[i]))
+      switch (Object.values(temp[i])[0]) {
+        case '投放时间': obj['launchTime'] = moment(temp[i]['launchTime'][0]).format('YYYYMMDDHHmmss') + ','
+          + moment(temp[i]['launchTime'][1]).format('YYYYMMDDHHmmss'); break;
+        case '投放类型': obj['launchType'] = temp[i]['launchType']; break;
+        case '消息类型': obj['messageType'] = temp[i]['messageType']; break;
+        case '消息内容': obj['message'] = temp[i]['message']; break;
+        case '负责人': obj['leader'] = temp[i]['leader']; break;
+        default: break;
       }
-      else {
-        obj[`${Object.keys(temp[i])[1]}`] = temp[i][`${Object.keys(temp[i])[1]}`];
-      }
+      // if (Object.keys(temp[i])[1] === 'launchTime') {
+      //   obj[`${Object.keys(temp[i])[1]}`] = moment(temp[i][`${Object.keys(temp[i])[1]}`][0]).format('YYYYMMDDHHmmss') + ','
+      //     + moment(temp[i][`${Object.keys(temp[i])[1]}`][1]).format('YYYYMMDDHHmmss');
+      // }
+      // else {
+      //   obj[`${Object.keys(temp[i])[1]}`] = temp[i][`${Object.keys(temp[i])[1]}`];
+      // }
     }
-    console.log("onFinish-value:", value, obj);
+    console.log("onFinish-value:", obj);
     this.props.areSetSearchValue(value.type);
     // 按钮为“查询”，关闭页面，进行查询操作
     if (flagSubmit === 1) {
       this.props.onClose();
     }
+  }
+
+  onselectTypeChange = (value) => {
+    // console.log('onselectTypeChange-value:', value)
+    this.formRef.current.setFieldsValue({
+      type:
+        this.formRef.current.getFieldsValue(true).type
+    });
+
+    // 清除之前值
+    let formValues = [];
+    formValues = this.formRef.current.getFieldValue()?.type;
+    for (let i = 0; i < formValues.length; i++) {
+      // console.log('------', formValues[i]['selectType'])
+      if (formValues[i]['selectType'] === value) {
+        // console.log('当前选择的，', formValues[i]['selectType'], value);
+        switch (value) {
+          case '投放时间': formValues[i]['launchTime'] = ''; break;
+          case '投放类型': formValues[i]['launchType'] = ''; break;
+          case '消息类型': formValues[i]['messageType'] = ''; break;
+          case '消息内容': formValues[i]['message'] = ''; break;
+          case '负责人': formValues[i]['leader'] = ''; break;
+          default: break;
+        }
+
+      }
+    }
+    // console.log('formValues:', formValues)
+    this.formRef.current.setFieldsValue({
+      type:
+        formValues
+    });
   }
 
   componentDidMount() {
@@ -146,6 +189,7 @@ export default class App extends React.Component {
                         >
                           <Select
                             placeholder='请选择搜索类型'
+                            onChange={this.onselectTypeChange}
                           >
                             {
                               this.state.typeOption.map((item) =>
